@@ -13,6 +13,7 @@ import (
 
 type AppConfig struct {
 	BotToken string   `yaml:"bot_token"`
+	BotProxy string   `yaml:"bot_proxy"`
 	ChatID   int64    `yaml:"chat_id"`
 	Message  string   `yaml:"message"`
 	Time     string   `yaml:"time"`
@@ -23,6 +24,7 @@ type AppConfig struct {
 func Default() AppConfig {
 	return AppConfig{
 		BotToken: "YOUR_TELEGRAM_BOT_TOKEN",
+		BotProxy: "socks5://vpn:1080",
 		Message:  "Коллеги, пора на дейлик!",
 		Time:     "10:29",
 		Timezone: "Europe/Moscow",

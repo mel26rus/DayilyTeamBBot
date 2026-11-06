@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"log/slog"
+	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -36,7 +38,22 @@ func main() {
 		os.Exit(1)
 	}
 
-	botAPI, err := tgbotapi.NewBotAPI(cfg.BotToken)
+	var botAPI *tgbotapi.BotAPI
+	if cfg.BotProxy != "" {
+		proxyURL, parseErr := url.Parse(cfg.BotProxy)
+		if parseErr != nil {
+			slog.Error("Parse bot proxy", "error", parseErr)
+			os.Exit(1)
+		}
+
+		client := &http.Client{
+			Transport: &http.Transport{Proxy: http.ProxyURL(proxyURL)},
+			Timeout:   30 * time.Second,
+		}
+		botAPI, err = tgbotapi.NewBotAPIWithClient(cfg.BotToken, tgbotapi.APIEndpoint, client)
+	} else {
+		botAPI, err = tgbotapi.NewBotAPI(cfg.BotToken)
+	}
 	if err != nil {
 		slog.Error("Bot initialization failed", "error", err)
 		os.Exit(1)
