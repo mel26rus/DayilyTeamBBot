@@ -1,0 +1,18 @@
+services:
+  bot:
+    build: .
+    container_name: daily-team-bot
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    environment:
+      TZ: Europe/Moscow
+    networks:
+      - default
+      # Внешняя сеть, к которой подключён VPN-контейнер.
+      - vpn-network
+    restart: unless-stopped
+
+networks:
+  vpn-network:
+    external: true
+    name: ${VPN_NETWORK:?Set VPN_NETWORK in .env to the existing VPN network name}
